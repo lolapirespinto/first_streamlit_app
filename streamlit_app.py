@@ -26,26 +26,18 @@ streamlit.dataframe(fruits_to_show)
 
 streamlit.header("Fruityvice Fruit Adice!")
 
-fruit_choice = streamlit.text_input('What fruit would you like information about?')
-streamlit.write('The user entered ', fruit_choice)
-# Vérifiez si l'utilisateur a saisi un fruit
-if fruit_choice:
-    try:
+try : 
+    fruit_choice = streamlit.text_input('What fruit would you like information about?')
+    if not fruit_choice:
+        streamlit.error("Please select a fruit to get information.")
+    else : 
         # Effectuez la requête vers l'API Fruityvice
         fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+        fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+        streamlit.dataframe(fruityvice_normalized)
 
-        # Vérifiez si la requête a réussi (statut 200)
-        if fruityvice_response.status_code == 200:
-            # Tentez de normaliser la réponse JSON
-            try:
-                fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-                streamlit.dataframe(fruityvice_normalized)
-            except pandas.errors.JSONDecodeError as e:
-                streamlit.error(f"Erreur lors de la normalisation JSON : {e}")
-        else:
-            streamlit.error(f"Erreur de requête vers Fruityvice API. Statut : {fruityvice_response.status_code}")
-    except requests.exceptions.RequestException as e:
-        streamlit.error(f"Erreur de connexion à l'API Fruityvice : {e}")
+excpet URLError as e:
+    streamlit.error()
 
 streamlit.stop()
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
