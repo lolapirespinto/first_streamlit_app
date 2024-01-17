@@ -24,11 +24,24 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 streamlit.dataframe(fruits_to_show)
 
 streamlit.header("Fruityvice Fruit Adice!")
-streamlit.text('test')
+
 fruit_choice = streamlit.text_input('What fruit would you like information about?')
 streamlit.write('The user entered ', fruit_choice)
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+# Vérifiez si l'utilisateur a saisi un fruit
+if fruit_choice:
+    try:
+        # Effectuez la requête vers l'API Fruityvice
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
 
-streamlit.dataframe(fruityvice_normalized)
-
+        # Vérifiez si la requête a réussi (statut 200)
+        if fruityvice_response.status_code == 200:
+            # Tentez de normaliser la réponse JSON
+            try:
+                fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+                streamlit.dataframe(fruityvice_normalized)
+            except pandas.errors.JSONDecodeError as e:
+                streamlit.error(f"Erreur lors de la normalisation JSON : {e}")
+        else:
+            streamlit.error(f"Erreur de requête vers Fruityvice API. Statut : {fruityvice_response.status_code}")
+    except requests.exceptions.RequestException as e:
+        streamlit.error(f"Erreur de connexion à l'API Fruityvice : {e}")
