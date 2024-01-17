@@ -3,13 +3,6 @@ import pandas
 import requests
 import snowflake.connector
 
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-my_cur.execute("SELECT CURRENT_USER(), CURRENT_ACCOUNT(), CURRENT_REGION()")
-my_data_row = my_cur.fetchone()
-streamlit.text("Hello from Snowflake:")
-streamlit.text(my_data_row)
-
 streamlit.title('My parents New Healthy Dinner')
 
 streamlit.header('Breakfast Menu')
@@ -52,3 +45,11 @@ if fruit_choice:
             streamlit.error(f"Erreur de requête vers Fruityvice API. Statut : {fruityvice_response.status_code}")
     except requests.exceptions.RequestException as e:
         streamlit.error(f"Erreur de connexion à l'API Fruityvice : {e}")
+
+
+my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+my_cur = my_cnx.cursor()
+my_cur.execute("SELECT CURRENT_USER(), CURRENT_ACCOUNT(), CURRENT_REGION()")
+my_data_row = my_cur.fetchone()
+streamlit.text("Hello from Snowflake:")
+streamlit.text(my_data_row)
